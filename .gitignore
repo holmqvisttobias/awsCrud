@@ -1,2 +1,5 @@
 .awsAccessKeyID
 .awsSecretAccessKey
+.awsRegionName
+*.json
+*.pyc
