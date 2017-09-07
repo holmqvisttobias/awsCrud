@@ -3,3 +3,4 @@
 .awsRegionName
 *.json
 *.pyc
+py3env*
