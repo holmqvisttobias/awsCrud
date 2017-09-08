@@ -1,5 +1,13 @@
 #!/usr/bin/python
 
+# @Author: Tobias Holmqvist <tohol>
+# @Date:   2017-09-06
+# @Email:  tobias.m.holmqvist@gmail.com
+# @Project: awsCrud
+# @Last modified by:   tohol
+# @Last modified time: 2017-09-08
+# @License: GPLv3
+
 class ReadFlatFiles:
     def __init__(self):
         self.__awsAccessKeyID      = self.__setAwsAccessKeyID()

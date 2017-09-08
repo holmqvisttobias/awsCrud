@@ -1,41 +1,42 @@
 #!/usr/bin/python
 
-import awsCredentials, boto3
-from botocore.exceptions import ClientError
-import argparse, sys
+# @Author: Tobias Holmqvist <tohol>
+# @Date:   2017-09-08
+# @Email:  tobias.m.holmqvist@gmail.com
+# @Project: awsCrud
+# @Last modified by:   tohol
+# @Last modified time: 2017-09-08
+# @License: GPLv3
+
+import awsCredentials, boto3, argparse, sys
+
 
 parser = argparse.ArgumentParser()
 
+parser.add_argument('instance', help='[all/instanceID]', nargs='?', default=None)
+
 parser.add_argument('-v', '--verbose', help='increase output verbosity', action='store_true')
-parser.add_argument('-i', '--id', metavar='str', help='instanceID')
-parser.add_argument('-l', '--list', help='list instances', action='store_true')
-parser.add_argument('-s', '--start', help='start instance', action='store_true')
-parser.add_argument('-p', '--poweroff', help='stop/poweroff instance', action='store_true')
-parser.add_argument('-r', '--restart', help='restart instance', action='store_true')
-parser.add_argument('-d', '--delete', help='remove/delete instance', action='store_true')
+parser.add_argument('-s', '--status', help='[all/instanceID] --status', action='store_true')
+parser.add_argument('-r', '--run', help='[all/instanceID] --run', action='store_true')
+parser.add_argument('-p', '--poweroff', help='[all/instanceID] --poweroff', action='store_true')
+parser.add_argument('-b', '--reboot', help='[all/instanceID] --reboot', action='store_true')
+parser.add_argument('-d', '--delete', help=' [all/instanceID] --delete', action='store_true')
+parser.add_argument('-c', '--create', help='[new/clone] --create', action='store_true')
+
 args = parser.parse_args()
 
-if args.id:
-    instanceID = args.id
-
-if  args.start and (args.poweroff or args.restart or args.delete):
-    print('\nINVALID COMBINATION: --start cannot be combined with poweroff/restart/delete\n')
-    parser.print_help()
+if  (not(args.instance)):
+    print('\nMISSING INSTANCE: specify all/instanceID\n')
     sys.exit(0)
 
-if  args.poweroff and (args.start or args.restart or args.delete):
-    print('\nINVALID COMBINATION: --poweroff cannot be combined with start/restart/delete\n')
-    parser.print_help()
-    sys.exit(0)
+if ((args.status   and (args.run    or args.poweroff or args.reboot or args.delete or args.create)) or
+    (args.run      and (args.status or args.poweroff or args.reboot or args.delete or args.create)) or
+    (args.poweroff and (args.run    or args.status   or args.reboot or args.delete or args.create)) or
+    (args.reboot   and (args.run    or args.poweroff or args.status or args.delete or args.create)) or
+    (args.delete   and (args.run    or args.poweroff or args.reboot or args.status or args.create)) or
+    (args.create   and (args.run    or args.poweroff or args.reboot or args.delete or args.status))):
 
-if  args.restart and (args.poweroff or args.start or args.delete):
-    print('\nINVALID COMBINATION: --restart cannot be combined with poweroff/start/delete\n')
-    parser.print_help()
-    sys.exit(0)
-
-if  args.delete and (args.poweroff or args.restart or args.start):
-    print('\nINVALID COMBINATION: --delete cannot be combined with poweroff/restart/start\n')
-    parser.print_help()
+    print('\nINVALID COMBINATION: status/run/poweroff/reboot/delete/create\n')
     sys.exit(0)
 
 awsKeys = awsCredentials.ReadFlatFiles()
@@ -45,9 +46,16 @@ client = boto3.client(
     aws_access_key_id     = awsKeys.getAwsAccessKeyID(),
     aws_secret_access_key = awsKeys.getAwsSecretAccessKey(),
     region_name           = awsKeys.getAwsRegionName()
-)
+    )
 
-response = client.describe_instances()
+try:
+    response = client.describe_instances()
+except Exception as e:
+    print('\nERROR: Cannot connect to host\n')
+    if (args.verbose):
+        print(e)
+    sys.exit(0)
+
 
 for reservation in response["Reservations"]:
     for instance in reservation["Instances"]:
