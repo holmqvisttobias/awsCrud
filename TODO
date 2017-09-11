@@ -1,1 +1,76 @@
 write unittests
+
+
+http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html
+
+"""
+class ReadFlatFiles:
+    def __init__(self):
+        pass
+
+class Connect:
+    def __init__(self):
+        pass
+"""
+
+
+"""
+class ReadFlatFiles:
+    def __init__(self, fAccessKeyId, fSecretAccessKey, fRegionName):
+        self.__fAccessKeyId     = fAccessKeyId
+        self.__fSecretAccessKey = fSecretAccessKey
+        self.__fRegionName      = fRegionName
+
+        if (verbose):
+            self.printFilenames()
+
+    def getAwsAccessKeyId(self):
+        # Get AWS ACCESS Key from file.
+        try:
+            openFile    = open(self.__fAccessKeyId, 'r')
+            fileContent = openFile.readline()
+            openFile.close()
+        except Exception as e:
+            print('\nCannot open file!: {0}\n'.format(self.__fAccessKeyId))
+            if (verbose):
+                print(e)
+            sys.exit(0)
+        return fileContent.strip()
+
+    def getAwsSecretAccessKey(self):
+        # Get AWS SECRET Key from file.
+        try:
+            openFile    = open(self.__fSecretAccessKey, 'r')
+            fileContent = openFile.readline()
+            openFile.close()
+        except Exception as e:
+            print('\nCannot open file!: {0}\n'.format(self.__fSecretAccessKey))
+            if (verbose):
+                print(e)
+            sys.exit(0)
+        fileContent.strip()
+
+    def getAwsRegionName(self):
+        # Get AWS REGION from file.
+        try:
+            openFile    = open(self.__fRegionName, 'r')
+            fileContent = openFile.readline()
+            openFile.close()
+        except Exception as e:
+            print('\nCannot open file!: {0}\n'.format(self.__fRegionName))
+            if (verbose):
+                print(e)
+            sys.exit(0)
+        fileContent.strip()
+
+    def printFilenames(self):
+        print('Filenames:')
+        print('Access Key : {0}\nSecret Key : {1}\nRegion Name: {2}\n'.format
+             (self.__fileAccessKeyId,
+              self.__fileSecretAccessKey,
+              self.__fileRegionName))
+
+
+class Connect:
+    def __init__(self):
+        pass"""

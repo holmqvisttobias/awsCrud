@@ -5,55 +5,65 @@
 # @Email:  tobias.m.holmqvist@gmail.com
 # @Project: awsCrud
 # @Last modified by:   tohol
-# @Last modified time: 2017-09-08
+# @Last modified time: 2017-09-11
 # @License: GPLv3
 
-import awsCredentials, boto3, argparse, sys
+import argparse, mainAwsCrud
 
-
-### START: read an validate parameters ----------------------------------------
+# Create parser object.
 parser = argparse.ArgumentParser()
 
+# Positional argument, should always exist.
 parser.add_argument('instance',
                     help='[all/instanceID]',
                     nargs='?',
                     default=None)
 
+# Optional argument, run in verbose mode.
 parser.add_argument('-v', '--verbose',
                     help='increase output verbosity',
                     action='store_true')
 
+# Optional argument, get status.
 parser.add_argument('-s', '--status',
                     help='[all/instanceID] --status',
                     action='store_true')
 
+# Optional argument, run instance.
 parser.add_argument('-r', '--run',
                     help='[all/instanceID] --run',
                     action='store_true')
 
+# Optional argument, poweroff instance.
 parser.add_argument('-p', '--poweroff',
                     help='[all/instanceID] --poweroff',
                     action='store_true')
 
+# Optional argument, reboot instance.
 parser.add_argument('-b', '--reboot',
                     help='[all/instanceID] --reboot',
                     action='store_true')
 
+# Optional argument, delete instance.
 parser.add_argument('-d', '--delete',
                     help=' [all/instanceID] --delete',
                     action='store_true')
 
+# Optional argument, create new instance.
 parser.add_argument('-c', '--create',
                     help='[new/clone] --create',
                     action='store_true')
 
+# Try to parse incoming arguments, or print help.
 args = parser.parse_args()
 
+# Make sure that argument is existing, or exit with 0.
 if  (not(args.instance)):
     print('\nMISSING INSTANCE: specify all/instanceID\n')
     sys.exit(0)
 
-# Make sure status/run/poweroff/reboot/delete/create is not combined.
+# Make sure status/run/poweroff/reboot/delete/create is not combined
+# or exit with 0.
 if ((args.status   and (args.run    or args.poweroff or args.reboot or
                         args.delete or args.create)) or
     (args.run      and (args.status or args.poweroff or args.reboot or
@@ -71,42 +81,5 @@ if ((args.status   and (args.run    or args.poweroff or args.reboot or
     print('\nINVALID COMBINATION: status/run/poweroff/reboot/delete/create\n')
     sys.exit(0)
 
-### END: read and validate parameters ----------------------------------------
-
-### START: Get credentials and connect ---------------------------------------
-
-# Get access keys from file.
-awsKeys = awsCredentials.ReadFlatFiles()
-
-# Setup client.
-client = boto3.client(
-    'ec2',
-    aws_access_key_id     = awsKeys.getAwsAccessKeyID(),
-    aws_secret_access_key = awsKeys.getAwsSecretAccessKey(),
-    region_name           = awsKeys.getAwsRegionName()
-    )
-
-
-# Try to connect and get info about all instances.
-try:
-    response = client.describe_instances()
-except Exception as e:
-    print('\nERROR: Cannot connect to host\n')
-    if (args.verbose):
-        print(e)
-    sys.exit(0)
-
-### END: Get credentials and connect -----------------------------------------
-
-
-for reservation in response["Reservations"]:
-    for instance in reservation["Instances"]:
-
-        print(instance['InstanceId'])
-        print(instance['KeyName'])
-        print(instance['InstanceType'])
-        print(instance['State']['Name'])
-        print(instance['PublicDnsName'])
-        print(instance['PublicIpAddress'])
-        print(instance['PrivateDnsName'])
-        print(instance['PrivateIpAddress'])
+# Run main function
+mainAwsCrud.main()

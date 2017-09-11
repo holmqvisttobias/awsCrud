@@ -1,4 +1,4 @@
-.awsAccessKeyID
+.awsAccessKeyId
 .awsSecretAccessKey
 .awsRegionName
 *.json
